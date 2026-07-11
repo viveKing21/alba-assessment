@@ -43,6 +43,7 @@ class TmdbError extends Error {
 }
 
 export const app = express();
+export default app;
 const allowedOrigin = process.env.FRONTEND_ORIGIN ?? "http://localhost:3000";
 const tmdbToken = process.env.TMDB_READ_ACCESS_TOKEN;
 const configuredTimelineYears = Number(process.env.TIMELINE_YEARS ?? 6);
