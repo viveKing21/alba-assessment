@@ -68,10 +68,9 @@ The production build completed successfully and verified all routes, TypeScript,
 
 ## Time Breakdown
 
-| Area | Relative effort |
-| --- | ---: |
-| Data model, indexes, RLS, Realtime, seed setup | 25% |
-| Auth and Next.js SSR session architecture | 20% |
-| Project and task CRUD workflows | 25% |
-| Dashboard, analytics, responsive visual design | 20% |
-| Documentation and build verification | 10% |
+| Phase                                                           | Approximate Time |
+| --------------------------------------------------------------- | ---------------: |
+| Brainstorming concepts and discussing approaches with AI        |       10 minutes |
+| Project setup and initial architecture                          |       10 minutes |
+| Building the frontend, backend, and iterating on the UI with AI |      ~30 minutes |
+| Deployment, debugging, and fixing Vercel build issues           |       15 minutes |
