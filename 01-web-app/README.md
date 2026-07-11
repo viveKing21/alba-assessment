@@ -16,7 +16,7 @@ Reeltime is an editorial movie discovery experience built around a living timeli
 ```text
 01-web-app/
 ├── backend/                 # Express 5 + TypeScript API
-│   ├── src/server.ts        # Routes, TMDB client, caching, and response mapping
+│   ├── src/app.ts           # Routes, TMDB client, caching, and response mapping
 │   └── README.md            # API-specific setup and endpoint reference
 ├── frontend/                # Next.js 16 App Router application
 │   ├── app/reeltime.tsx     # Timeline interaction and presentation
