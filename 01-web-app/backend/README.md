@@ -127,7 +127,7 @@ Errors use `{ "error": "..." }`.
 
 ## Vercel deployment
 
-Deploy the `backend` directory as the Vercel project root. The catch-all serverless function in `api/[...path].ts` serves the Express routes, so this project does not use a static output directory such as `public`.
+Deploy the `backend` directory as the Vercel project root. Vercel detects the default Express export in `src/app.ts`, so this project does not use a static output directory such as `public`.
 
 Set `TMDB_READ_ACCESS_TOKEN` and the deployed frontend's URL for `FRONTEND_ORIGIN` in the Vercel project environment variables. Configure `NEXT_PUBLIC_API_URL` in the frontend deployment to the backend deployment URL.
 
