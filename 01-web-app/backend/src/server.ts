@@ -42,7 +42,7 @@ class TmdbError extends Error {
   }
 }
 
-const app = express();
+export const app = express();
 const port = Number(process.env.PORT ?? 4000);
 const allowedOrigin = process.env.FRONTEND_ORIGIN ?? "http://localhost:3000";
 const tmdbToken = process.env.TMDB_READ_ACCESS_TOKEN;
@@ -207,6 +207,8 @@ app.use((_request: Request, response: Response) => {
   response.status(404).json({ error: "Route not found" });
 });
 
-app.listen(port, () => {
-  console.log(`Reeltime API listening at http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Reeltime API listening at http://localhost:${port}`);
+  });
+}
