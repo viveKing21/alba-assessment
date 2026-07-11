@@ -1,0 +1,396 @@
+{
+  "name": "Job Finder & Daily Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtMinute": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "56a1e63b-5e81-41c8-9ca1-dff0a7107438",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/api/remote-jobs",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9535fba9-85a0-4e82-9465-42b441dfee0f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobs = $input.first().json.jobs;\n\nreturn jobs.map(job => ({\n  json: {\n    title: job.title,\n    company: job.company_name,\n    location: job.candidate_required_location,\n    category: job.category,\n    url: job.url,\n    published: job.publication_date\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "deffcc5e-5d57-4330-9cab-010e2e04108d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = [\n  \"react\",\n  \"next\",\n  \"next.js\",\n  \"typescript\",\n  \"node\",\n  \"node.js\",\n  \"frontend\",\n  \"full stack\",\n  \"javascript\"\n];\n\nreturn items.filter(item => {\n  const title = item.json.title.toLowerCase();\n\n  return keywords.some(keyword => title.includes(keyword));\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "3adef37c-da3d-4c33-b42b-9e3bddf06f1f",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8f3bd5ba-43b0-47b7-aa3d-282023623c04",
+              "leftValue": "={{$input.all().length}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "07619316-a7a8-4fc2-9fc4-6d45609ddd4d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a career assistant.  Below are today's remote software engineering jobs.  Create a clean, modern HTML email.  For each job include: - Company - Position - Location - 1–2 sentence summary - Why it's attractive for a React/Next.js developer  At the end, recommend the Top 3 jobs.  Return ONLY valid HTML (no Markdown or code fences). Use a simple, responsive layout with a blue header, job cards, and an \"Apply Now\" button for each job if a URL is available."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "1f10f6be-ced5-46cd-b765-e656aba77a23",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        976,
+        112
+      ],
+      "id": "7455f56d-3097-4805-8774-0fd9d351f833",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "sharma.vivek.dev@gmail.com",
+        "subject": "No matching jobs today",
+        "emailType": "text",
+        "message": "No React/Next.js jobs matched your filters today.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        144
+      ],
+      "id": "0c6311a9-71ee-4411-8edd-eecccd08d49a",
+      "name": "Send a message",
+      "webhookId": "176e109b-9d11-4863-a4c1-608ac9264769",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Ecj3g4fsrIFSKii7",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JpBXwXfwOpYqXwgxLdmBNIKiSeAyctxuPToht26VwVY",
+          "mode": "list",
+          "cachedResultName": "Job n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JpBXwXfwOpYqXwgxLdmBNIKiSeAyctxuPToht26VwVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JpBXwXfwOpYqXwgxLdmBNIKiSeAyctxuPToht26VwVY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "published",
+              "displayName": "published",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        928,
+        -240
+      ],
+      "id": "7478f55f-9d6a-4272-a3b1-00f81d9143f3",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WFnrxBlqfdIjPFoe",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "sharma.vivek.dev@gmail.com",
+        "subject": "=🤖 Daily Remote Developer Jobs Digest — {{ $now.format(\"dd MMM yyyy\") }}",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        -96
+      ],
+      "id": "b6393023-8120-4266-ba11-c777fc42496f",
+      "name": "Send a message1",
+      "webhookId": "78540dd3-a487-4166-9057-51147b5f470b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Ecj3g4fsrIFSKii7",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "46fcad40-04be-4630-a4ac-5dfc7db13b4b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4871b6165f8cf933b385533e631f47df95c2b9cbf3e145aec61173ee4fb2d483"
+  },
+  "nodeGroups": [],
+  "id": "u0m1Dzij6m09H6L8",
+  "tags": []
+}
